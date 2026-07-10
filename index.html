@@ -1,0 +1,628 @@
+<title>佐藤ゼミ アンケートダッシュボード</title>
+<style>
+:root {
+  --bg: #F5F4F1;
+  --card: #FFFFFF;
+  --ink: #1A1918;
+  --ink2: #6B6A66;
+  --ink3: #9A9994;
+  --accent: #2A6FBD;
+  --accent-bg: rgba(42,111,189,0.06);
+  --rule: #D5D4CE;
+  --shadow: 0 1px 3px rgba(0,0,0,0.06);
+  --s5: #2A6FBD;
+  --s4: #7AB3E5;
+  --s3: #B8B7B1;
+  --s2: #D9A030;
+  --s1: #C94545;
+  --pos: #2A8F65;
+  --imp: #C98500;
+  --r: 6px;
+  --font: "Hiragino Kaku Gothic ProN","Hiragino Sans","Noto Sans JP",system-ui,-apple-system,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:var(--font);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;}
+.wrap{max-width:920px;margin:0 auto;padding:24px 16px 48px;}
+.hdr{padding:32px 0 20px;}
+.hdr h1{font-size:22px;font-weight:700;letter-spacing:-0.01em;}
+.hdr p{font-size:13px;color:var(--ink2);margin-top:2px;}
+.tabs{display:flex;gap:0;border-bottom:2px solid var(--rule);overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;position:sticky;top:0;background:var(--bg);z-index:10;padding-top:2px;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{padding:10px 14px;font-size:13px;font-weight:500;color:var(--ink2);cursor:pointer;border:none;background:none;white-space:nowrap;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;font-family:var(--font);}
+.tab:hover{color:var(--ink);}
+.tab.act{color:var(--accent);border-bottom-color:var(--accent);}
+.tab .badge{font-size:10px;color:var(--ink3);margin-left:2px;}
+.pnl{display:none;padding:24px 0;}
+.pnl.act{display:block;}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:28px;}
+.tile{background:var(--card);border-radius:var(--r);padding:16px 18px;border:1px solid var(--rule);box-shadow:var(--shadow);}
+.tile-v{font-size:34px;font-weight:700;line-height:1.1;}
+.tile-l{font-size:12px;color:var(--ink2);margin-top:4px;letter-spacing:0.02em;}
+.tile-sub{font-size:11px;color:var(--ink3);margin-top:2px;}
+.sec{margin-bottom:20px;background:var(--card);border:1px solid var(--rule);border-radius:var(--r);padding:18px 20px;box-shadow:var(--shadow);}
+.sec-t{font-size:13px;font-weight:600;color:var(--ink2);margin-bottom:12px;letter-spacing:0.02em;text-transform:uppercase;padding-bottom:8px;border-bottom:1px solid var(--rule);}
+.sat-bar{display:flex;height:26px;border-radius:4px;overflow:hidden;gap:2px;background:var(--card);}
+.sat-seg{display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#fff;min-width:2px;transition:width .3s;}
+.sat-seg.c5{background:var(--s5);}.sat-seg.c4{background:var(--s4);color:var(--ink);}.sat-seg.c3{background:var(--s3);color:var(--ink);}
+.sat-seg.c2{background:var(--s2);color:var(--ink);}.sat-seg.c1{background:var(--s1);}
+.sat-legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:10px;}
+.sat-li{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--ink2);}
+.sat-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0;}
+.hbar{margin-bottom:8px;display:flex;align-items:center;gap:8px;}
+.hbar-lb{width:150px;text-align:right;font-size:12px;color:var(--ink2);flex-shrink:0;line-height:1.3;}
+.hbar-tr{flex:1;height:22px;background:var(--rule);border-radius:3px;overflow:hidden;position:relative;}
+.hbar-fl{height:100%;background:var(--accent);border-radius:3px;transition:width .4s ease;}
+.hbar-vl{font-size:12px;color:var(--ink2);margin-left:8px;flex-shrink:0;font-variant-numeric:tabular-nums;min-width:36px;}
+.cmts{display:grid;grid-template-columns:1fr 1fr;gap:28px;}
+.cmt-col h3{font-size:13px;font-weight:600;color:var(--ink2);margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.cmt-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.cmt-dot.p{background:var(--pos);}.cmt-dot.i{background:var(--imp);}
+.cmt-list{list-style:none;}
+.cmt-item{font-size:13px;line-height:1.7;padding:8px 0;border-bottom:1px solid #E8E7E2;color:var(--ink);}
+.cmt-item:last-child{border-bottom:none;}
+.cmt-list:not(.open) .cmt-item:nth-child(n+6){display:none;}
+.cmt-more{font-size:12px;color:var(--accent);cursor:pointer;padding:6px 0;border:none;background:none;font-family:var(--font);font-weight:500;}
+.cmt-more:hover{text-decoration:underline;}
+.cmt-empty{font-size:13px;color:var(--ink3);padding:8px 0;}
+.tbl-wrap{overflow-x:auto;background:var(--card);border:1px solid var(--rule);border-radius:var(--r);box-shadow:var(--shadow);padding:4px 0;}
+table.sum{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;}
+table.sum th{font-size:11px;font-weight:600;color:var(--ink3);text-align:left;padding:10px 12px;border-bottom:2px solid var(--rule);letter-spacing:0.04em;text-transform:uppercase;}
+table.sum td{font-size:13px;padding:10px 12px;border-bottom:1px solid var(--rule);}
+table.sum tbody tr:last-child td{border-bottom:none;}
+table.sum tr:hover td{background:var(--accent-bg);}
+table.sum .hi{font-weight:600;color:var(--accent);}
+.chart-card{background:var(--card);border:1px solid var(--rule);border-radius:var(--r);padding:20px;margin-bottom:20px;box-shadow:var(--shadow);}
+.chart-card h3{font-size:13px;font-weight:600;color:var(--ink2);margin-bottom:14px;}
+canvas.trend{width:100%;height:220px;display:block;}
+.note{font-size:12px;color:var(--ink2);padding:12px 16px;background:var(--accent-bg);border:1px solid rgba(42,111,189,0.15);border-radius:var(--r);margin-bottom:20px;line-height:1.6;font-weight:500;}
+.career-bar{margin-bottom:6px;display:flex;align-items:center;gap:8px;}
+.career-lb{width:170px;text-align:right;font-size:12px;color:var(--ink2);flex-shrink:0;}
+.career-tr{flex:1;height:20px;background:var(--rule);border-radius:3px;overflow:hidden;}
+.career-fl{height:100%;background:var(--accent);border-radius:3px;opacity:.85;}
+.career-vl{font-size:12px;color:var(--ink2);min-width:30px;font-variant-numeric:tabular-nums;}
+.cmt-themed{margin-bottom:16px;}
+.cmt-themed h4{font-size:12px;font-weight:600;color:var(--ink3);margin-bottom:6px;}
+@media(max-width:640px){
+  .tiles{grid-template-columns:1fr 1fr;}
+  .tile-v{font-size:28px;}
+  .cmts{grid-template-columns:1fr;}
+  .hbar-lb,.career-lb{width:110px;font-size:11px;}
+  .tab{padding:10px 10px;font-size:12px;}
+}
+@media(max-width:400px){
+  .tiles{grid-template-columns:1fr;}
+}
+@media print{
+  .tabs{display:none;}
+  .pnl{display:block !important;page-break-inside:avoid;}
+}
+</style>
+<div id="app"></div>
+<script>
+const S=[
+{id:'20260709',lb:'7/9',title:'AI講師シリーズ #2 伝え方の設計',sub:'講義回',n:null,r:81,pct:null,sat:4.81,d:[0,0,2,11,68],nps:4.54,
+reasons:[['興味のあるジャンルだった',42],['登壇者の話を聞きたかった',22],['業務に役立つと感じた',11],['タイミングが合った',6]],
+channels:[['会員限定LINE',48],['イベントページ',29],['Googleカレンダー',11],['公式X',2]],
+pos:[
+`こういうウェビナーは定期的に開催をお願いします。`,
+`佐藤誠一さんのセミナーには生徒さんもすごい！無茶苦茶温度が高い！！`,
+`とてもためになりました。ありがとうございます。`,
+`とても面白かったです。話し方のポイントだけで講義もしていただきたいです。`,
+`会社でAIの活用術ガイドを製作していますが、悩みの共感からはいるとか、いかに興味を引くかというのはとても参考になりました。`,
+`最初に興味を持ってもらうつかみのコツなどは非常に勉強になりました。`,
+`AIに限らず、社内での教育にも使えそうな内容であったため、実践してみます。`,
+`大変示唆に富む講座でした。また、よろしくお願い申し上げます。`,
+`暗黙知が形式知化されたようなインパクトがありました！`,
+`相変わらず佐藤講師の分かりやすい講義で、内容よりも佐藤講師の立ち振る舞いが勉強になります。`,
+`勉強になりました。`,
+`今日もとても楽しかったです。話し方と文章を書くのと通じることが改めて実感できました。それでも口下手で文章ポンコツなので自分にはハードルは高いのですが、出来ることから頑張ります！次回も参加します！`,
+`講習や講師に限らず、スマートかつ円滑な人間関係の構築の方法、素晴らしいです！`,
+`めちゃくちゃ勉強になりました〜`,
+`めちゃくちゃ楽しかったです！`,
+`良かったです。リピートしたいです`,
+`声のトーンもとても聞きやすくて、実際に講師にやる時に参考になるお話しが多くてとても良かったです。`,
+`なるほどね、と参考になりました。`,
+`社内で生成AIチャットボットの説明会をしたのですが、結局その後利用者が根付かない状態でした。今回の講義の内容を知っていたらもっと充実した内容にできたかもしれないので、今後は後悔しないように身に着けて、次回までの宿題もやります。`,
+`前職で人事をしていたときに研修の開催をしていました。受講者に何を伝えたいのかやゴールを明確にして進めることの大切さを改めて気付かされました。AI講師できるように頑張ります。`,
+`本業の講習会で講師を年間に1~2回していますが殆どPCに記載されている文を読むだけだったので、今日の講習を参考にし取り入れます。`,
+`とても分かりやすく、楽しい内容で有り難うございました。`,
+`広島AIコミュニティを主催しており、とても参考になりました。アーカイブでじっくり復習していきます。`,
+`「掴み」の部分や受講生を「その気」にさせるノウハウ、臨機応変対応、リハーサルの重要性など、とても学びの多いウェビナーでした。`,
+`伝える技術がいかに大切かよくわかりました。ありがとうございました。`,
+`セミナーのコツをたくさん教えていただいてありがとうございました。対象者さんの心をつかみたいと思いました。`
+],
+imp:[
+`AIエージェントを使ってメールの定期的な整理方法が知りたい。`,
+`研修でのコツをたくさん教えて欲しいです。`,
+`マーケティング、確定申告についても取り上げてほしい。`
+]},
+
+{id:'20260618',lb:'6/18',title:'構成編 フィードバック回',sub:'AI講師 #1 FB回',n:159,r:64,pct:40.2,sat:4.39,d:[1,0,6,23,34],nps:null,
+reasons:null,channels:null,
+pos:[
+`わかりやすい解説ありがとうございました。`,
+`これからも継続してお願いします。`,
+`内容が濃かったです。じっくりアーカイブもみてみたいです！`,
+`構成案、大変参考になりました。`,
+`わかりやすかったです。ありがとうございました。`,
+`はじめて参加しましたが、30分での構成を考える難しさを理解できました。`,
+`上から読んでも下から読んでも論理破綻していないことは、思考の組み立てや資料作成にも通じる大事なことと思いました。`,
+`リアルでの添削会はとてもためになります。自分でも考えながら添削を聴けるのが勉強になります。`,
+`いつも聞き入るセミナーです、ありがとうございました`,
+`今後AIについてのセミナーをやっていきたいと思っていたので、構成作りの参考になりました。`,
+`添削の指摘が、とても的を得ていて大変分かりやすく、腑に落ちました。次回を楽しみにしています。`,
+`フィードバックをガチで見聞き出来るのは本当にありがたいです。書くことに対して迷子になりがちなので、頑張って消化していきたいです。`,
+`とても具体的で実践的な内容で大満足です。めちゃくちゃ参考になりました。すぐ活かします。`,
+`実際の考え方が分かりやすく理解できました。`,
+`明快でとても分かりやすいです。`,
+`話し方の癖など、気になるところなのでお話聞けてよかったです。`,
+`構成添削、とてもとても勉強になりました！他の方の構成案を見ると、自分も確かに経験したのに、それを講座テーマにとりあげることを思いつきませんでした。`,
+`数ある課題提出の中から取り上げていただきまして、ありがとうございました。`,
+`皆さんのレベルの高さに圧倒されました。`
+],
+imp:[
+`みんなの前で自分の宿題の添削をされるのがプレッシャー感じる。`,
+`XなどのAIライティングを受注した際のクライアントとの打ち合わせあるあるなどの体験話が聞きたい。`,
+`Claude Codeについての機能と操作方法をもっと詳しく知りたい。`,
+`宿題提出の情報が事前に見つからなかった。`,
+`仕事に使える実践講習を希望。`,
+`AI講師について深堀した講義（内容の選定・時間配分など）を聞きたい。`
+]},
+
+{id:'20260604',lb:'6/4',title:'AI講師シリーズ #1 構成編',sub:'講義回',n:192,r:89,pct:46.3,sat:4.63,d:[0,0,6,21,62],nps:null,
+reasons:null,channels:null,
+pos:[
+`ありがとうございました。参考になりました。`,
+`今回のような実践的な内容は大変勉強になります。`,
+`構成力は普遍的な技術、というのが印象的でした。ライティングにも当てはまるので、駆け出しの私にも参考になりました。`,
+`これからライターを目指す立場ですが、「構成力」を意識して活動しようと思います。`,
+`ワークがよかった。ミニワークと宿題のフィードバックは自分のやっていることが正解かわからないので、参考になる。`,
+`今日の午前にMeetで説明会を開いたが、利用ガイドをずっとしゃべるだけで伝わる構成ではなかったと反省しました。宿題で構成を考えなおしてみます。`,
+`雑談部分もけっこう肝となる話もあったので参考になりました。`,
+`ライターではないですが、講師をするときの考え方として参考になりました。`,
+`営業の提案資料にも万人に為になる内容でした。`,
+`考え方として、とても参考にさせて頂きたいと思います。`,
+`佐藤さん、寺町さん、いつも優しい口調で聞きやすく、わかりやすいお話で、とても良いウェビナーでした。`,
+`お人柄が表れる優しい語り口、具体的でとてもわかりやすい講義でした。`,
+`構成力が重要なことに腹落ちいたしました。次のステップに活かしていこうと思います。`,
+`頭を使って、構成力という意味を理解できてきました。`
+],
+imp:[
+`講師案件の取得方法について知りたいです。`,
+`ぜひ続きを知りたいです！`,
+`企業研修でやったアジェンダを知りたい。`,
+`ライター以外の人でも応用できる事例があるといいと思いました。`,
+`ワークがうまくできなかった。何をどうすればいいのかわからなかった。`,
+`講習の対象者のニーズ別の具体例を知りたいです。`,
+`記事の書き方・読んでもらえるポイントを詳しく教えてほしい。`,
+`文末処理の方法（です・ます連続の修正）を知りたい。AI出力後の「仕上げ」に関するウェビナーをお願いします。`,
+`20時開始はなかなか参加できません。`,
+`講師業についてのマーケティングやデザインの基礎知識、確定申告などのテーマを希望。`
+]},
+
+{id:'20260521',lb:'5/21',title:'SNS運用代行 フィードバック回',sub:'FB回',n:93,r:34,pct:36.5,sat:4.76,d:[0,0,1,6,27],nps:null,
+reasons:null,channels:null,
+pos:[
+`十分すぎた`,
+`取りこぼしない工夫が知れて良かった。`,
+`Xの運用を具体的に詳しく教えていただきありがとうございます`,
+`生成AIのプロンプト例を参考にさせていただきます。`,
+`わかりやすくありがとうございました！`,
+`毎回楽しみにしています、分かりやすいセミナーありがとうございます`,
+`アーカイブで復習してみたいと思います。`,
+`フィードバックを活かしていきたいと思います。具体的にX投稿のノウハウを教えていただきありがとうございました。`,
+`次のセミナーの日時が案内あるので時間確保ができやすく嬉しいです。`,
+`佐藤講師の話は非常にわかりやすい。自らのサイトでデモを行い、生データを見せてくれる度量にも感心です。`,
+`内容盛りだくさんで大変勉強になりました。できるだけたくさんしゃべって下さい（笑）`,
+`X投稿から仕事を獲得できると知った。プロフィールなど直したいと思いました！`
+],
+imp:[
+`外国人との絡み方を教えていただきたいです。グローバルに繋がりが増える可能性がある。`,
+`生回答質問会を時間を長めでジャンルごとに実施してほしい。`,
+`X投稿で行き詰まったときの改善方法を教えていただきたいです。`,
+`伸びる投稿のパターン・法則のところはもう少し時間を割いてほしい。`,
+`インプレッションの伸ばし方、テーマの決め方を教えて欲しいです。`,
+`Xを使っていないので、インスタでも同じようにできるのか気になります。noteで頑張ってみます！`
+]},
+
+{id:'20260508',lb:'5/8',title:'AI×SNS運用代行',sub:'講義回',n:395,r:148,pct:37.4,sat:4.59,d:[0,0,10,40,98],nps:null,
+reasons:null,channels:null,
+pos:[
+`SNSの秘密がわかり良かったです。滞在時間を意識します。`,
+`SNS運用代行に関わる多くのことを教えていただき感謝いたします。`,
+`Xのリサーチの仕方がわかり、運用代行とはどういう仕事なのかのリアルを聞けてよかったです！`,
+`X投稿代行について、詳しくお話しがきけてよかったです！`,
+`X運用のことが知れとても良かった。`,
+`わかりやすく、90分で内容充実してて良かったです。更に発展した内容のウェビナーも希望。`,
+`佐藤さんのClaudeのXの投稿が人っぽくてXに良かったと聞いて課金するならClaudeかなと思いました`,
+`全体像がよくわかりました。ありがとうございました。`,
+`具体例を交えてわかりやすいお話でよかったです。`,
+`内容が具体的でとても勉強になりました。`,
+`ライティングの上手な方の話は非常にわかりやすかったです。`,
+`熱量の熱い講義をいただき、ありがとうございました。`,
+`インスタ運用の実績あるのに動いてないだけだった。動きます！`,
+`自社ブランド商品販売の広告運用の一環としてSNS本格的にやりたい。大変勉強になりました。`,
+`詳細みせていただけて具体的に理解できました。`
+],
+imp:[
+`AIのもっと具体的な使い方を知りたいです。`,
+`Instaを期待して参加したため最初残念に感じましたが、講師の話面白かったため最後まで参加しました。`,
+`記事の作成、ネタの作り方、分析法などもう少し詳しく知りたかった。`,
+`時間設定の案内LINEが20〜21時の90分とどちらが正かわからなかった。`,
+`初心者向けに実際のプロンプト等も紹介していただけると嬉しいです。`
+]},
+
+{id:'20260423',lb:'4/23',title:'スキルロードマップ フィードバック回',sub:'FB回',n:118,r:46,pct:38.9,sat:4.78,d:[0,0,1,8,37],nps:null,
+reasons:null,channels:null,
+pos:[
+`きわめて濃密な時間だった`,
+`盛りだくさんでもう一度アーカイブで聞いてみます。`,
+`キャリアは広がりますね〜。ロードマップ作成して提出しようと思います！`,
+`沢山の業界に対する内容で参考になりました。`,
+`初めて参加しましたが、アーカイブで1回目を視聴して宿題やってみます！`,
+`知らない業界の話が聞けてすごく勉強になりました。`,
+`10人のうちの1人に選んで頂き、直接FB頂けて感激しました。`,
+`色んな業界の方のご紹介大変だったと思いますが、めっちゃ聞き入ってしまいました。`,
+`違う分野の内容でも自分にも取り入れそうな内容で、とても有意義なセミナーでした。`,
+`佐藤誠一さんのセミナー参考になります、毎回楽しみにしています`,
+`色んな業界の仕組みやポイントがわかって楽しかったです。`,
+`色々な業種・経験者に対する次のステップの解説がわかりやすく、実経験からのお話が説得力がありました。`,
+`ネクストステップの可能性を強く感じることができました。`,
+`これまで聞いてきたウェビナー全てのなかで一番心が動きました`,
+`知らない世界を知ることができて、すごく興味深かったです。`,
+`ネクストキャリアへの知見を広めることができ、とても良かったです。`,
+`SNS運用代行、よく聞くので次回も楽しみにしております。`,
+`SEOには向いていないと思っていたが、考え直してみることにしました。`,
+`初めて訪問した者にとっては、発言のすべてが参考になりました。`
+],
+imp:[
+`そういう武器がないと難しいのかとちょいとへこんだ。でもできることはやってみようと思います。`,
+`講義にもう少し時間をかけて欲しいです。`,
+`キャリアプランで画家としてのプランを作りたいです。`,
+`講評して欲しかったです。他の方との共通点で理解するのは難しい。`
+]},
+
+{id:'20260409',lb:'4/9',title:'キャリア別スキルロードマップ',sub:'講義回',n:277,r:110,pct:39.7,sat:4.58,d:[0,1,10,23,76],nps:null,
+reasons:null,channels:null,
+pos:[
+`とても分かりやすかったです。ありがとうございました。`,
+`佐藤さんのお話が本当にわかりやすくて、色々考えるきっかけになります。`,
+`ゼミ楽しみです。宜しくお願い申し上げます。`,
+`ライタースキルが様々なことに活かせることがわかってよかったです。`,
+`非常にわかりやすく初心者でもイメージできました！`,
+`佐藤さんの過去のアーカイブを楽しみにしています。`,
+`また参加します。ありがとうございました`,
+`今後のキャリアがイメージしやすくなりました。参加してよかったです！`,
+`ライターが自分にピンと来ていなかったが、今までの経験が色々使えるかもと夢が広がりました！`,
+`色んなキャリアパスがあるとわかって、勉強の道筋が見えてきました。`,
+`とてもわかりやすく説明に集中して聞いていました。`,
+`実体験に基づくお話で興味深く拝聴しました。`,
+`まずはライターからなんだ！ということがわかりました！AIコンサルになるためにコツコツ頑張りたい。`,
+`希望が見れてよかったです。これからのイメージが出来たことが有難いです。`,
+`内容がとても整理されていて理解しやすかったです。`,
+`マネタイズケースは大変わかりやすくて良かったです。`,
+`セールスコピーライターをしているので、毎回佐藤さんのウェビナーを楽しみにしています。リサーチャーという仕事でもお金がもらえるとは思っていませんでした。`,
+`今学んでいることがどんな未来につながるのか想像もできなかったが、お話を聞いてすごくわくわくしました。`,
+`佐藤先生のセミナーはいつもわかりやすくご自分の言葉でかみ砕いて教えて下さるので勉強になります。`
+],
+imp:[
+`最初に獲得するにはどうゆう営業トークがいいですか？`,
+`ライターに興味が沸かないが、基礎鍛錬として必要なのだろうと感じます。興味が沸かない人間用のコンテンツは？`,
+`プロンプトノウハウについてもっとお聞きしたいです。`,
+`ライターで収益化もできていないので雲の上の話。ウェビナーレベルが上がってついていけなくなった。`,
+`ライターの環境が変わり仕事が停滞。方向性がわからないのでDiscordで目標をクリアにしたい。`,
+`参加者がやり切れる構成でお願いします。ついて行けないとやる気を無くす。`,
+`副業で何をやればいいかわからない人が多い。「どう探すか」を知る方が先。`,
+`進行スピードについていけませんが、お話わかりやすかったです。`,
+`ディスコードがわかってないので基本から知りたい。`,
+`佐藤さんがどんな経緯や場所からお仕事を取ってこられたのかをテーマにウェビナーをしてほしい。`,
+`ライターとして今後どうしていけばよいか、佐藤先生の体験談を交えて聞きたい。`,
+`Discordのチャンネルが多すぎてわかりづらい。`
+]}
+];
+
+const INIT={
+  id:'20260319',lb:'3/19',sub:'事前アンケート',r:59,
+  status:[['ライター＋別の仕事を掛け持ち',35,59],['キャリア転換を検討中',17,29],['ライター専業',7,12]],
+  careers:[['AI研修講師',31],['SNS運用代行',29],['リサーチャー',28],['一次情報ライター',26],['AIディレクター',25],['ファクトチェッカー',19],['AIプロダクトエンジニア',18],['AI編集者',17],['AIプロンプトエンジニア',17]],
+  walls:[['スキル選択の迷い',22,37],['AI活用の方法論',19,32],['時間・収入の不安',14,24],['案件の取り方',4,7]],
+  comments:[
+    {theme:'案件獲得',items:[
+      `どうやって企業案件を取りに行くのか`,
+      `アプリ開発案件をどうやって取っているのか`,
+      `テストライティングまでしか進まない状態でもキャリア設計できるか`
+    ]},
+    {theme:'キャリアロードマップ',items:[
+      `ライター→AIエージェント→AI編集者→AIコンサルなど具体的なスケジュール感が知りたい`,
+      `AIライターからAIコンサルタントへのロードマップを聞きたい`,
+      `キャリアアップ時の具体的な行動を教えてほしい`
+    ]},
+    {theme:'AI・スキル活用',items:[
+      `プロンプト作成術・改善術を具体的に教えてほしい。1記事に何時間もかかる`,
+      `AIを使い始めて自分らしい文章が分からなくなった`,
+      `高単価ファクトチェッカーとして生きていくコツ`,
+      `複数案件を捌く時間設計の方法`
+    ]},
+    {theme:'その他',items:[
+      `経営者視点で「一流の講師の語り口」と評価`,
+      `後期高齢者でも大丈夫ですか？`
+    ]}
+  ]
+};
+
+const SL=['不満','やや不満','普通','やや満足','満足'];
+const SC=['c1','c2','c3','c4','c5'];
+
+function h(tag,cls,html){const e=document.createElement(tag);if(cls)e.className=cls;if(html)e.innerHTML=html;return e;}
+
+function tiles(data){
+  const g=h('div','tiles');
+  const items=[];
+  items.push({v:data.r,l:'回答数',s:data.n?`参加者 ${data.n}名`:null});
+  items.push({v:data.sat.toFixed(2),l:'満足度',s:'MAX 5.00'});
+  if(data.pct)items.push({v:data.pct+'%',l:'回答率',s:null});
+  else if(data.nps!==null)items.push({v:data.nps.toFixed(2),l:'推奨度 (NPS)',s:'MAX 5.00'});
+  else items.push({v:'-',l:'回答率',s:null});
+  items.forEach(t=>{
+    const d=h('div','tile');
+    d.innerHTML=`<div class="tile-v">${t.v}</div><div class="tile-l">${t.l}</div>${t.s?`<div class="tile-sub">${t.s}</div>`:''}`;
+    g.appendChild(d);
+  });
+  return g;
+}
+
+function satBar(dist,total){
+  const sec=h('div','sec');
+  sec.appendChild(h('div','sec-t','満足度分布'));
+  const bar=h('div','sat-bar');
+  for(let i=4;i>=0;i--){
+    if(dist[i]===0)continue;
+    const pct=(dist[i]/total*100);
+    const seg=h('div',`sat-seg ${SC[i]}`);
+    seg.style.width=pct+'%';
+    seg.title=`${SL[i]}: ${dist[i]}件 (${pct.toFixed(1)}%)`;
+    if(pct>12)seg.textContent=Math.round(pct)+'%';
+    bar.appendChild(seg);
+  }
+  sec.appendChild(bar);
+  const leg=h('div','sat-legend');
+  for(let i=4;i>=0;i--){
+    if(dist[i]===0)continue;
+    const pct=(dist[i]/total*100).toFixed(1);
+    const li=h('div','sat-li',`<span class="sat-dot" style="background:var(--s${i+1})"></span>${SL[i]} ${dist[i]}件 (${pct}%)`);
+    leg.appendChild(li);
+  }
+  sec.appendChild(leg);
+  return sec;
+}
+
+function hBars(title,data,maxVal){
+  const sec=h('div','sec');
+  sec.appendChild(h('div','sec-t',title));
+  const mx=maxVal||Math.max(...data.map(d=>d[1]));
+  data.forEach(([lb,val])=>{
+    const row=h('div','hbar');
+    row.innerHTML=`<div class="hbar-lb">${lb}</div><div class="hbar-tr"><div class="hbar-fl" style="width:${val/mx*100}%"></div></div><div class="hbar-vl">${val}</div>`;
+    sec.appendChild(row);
+  });
+  return sec;
+}
+
+function cmtSection(pos,imp){
+  const sec=h('div','sec');
+  sec.appendChild(h('div','sec-t','参加者の声'));
+  const grid=h('div','cmts');
+  grid.appendChild(cmtCol('嬉しいお声',pos,'p'));
+  grid.appendChild(cmtCol('改善要望・テーマ候補',imp,'i'));
+  sec.appendChild(grid);
+  return sec;
+}
+
+function cmtCol(title,items,type){
+  const col=h('div','cmt-col');
+  col.innerHTML=`<h3><span class="cmt-dot ${type}"></span>${title} (${items.length})</h3>`;
+  if(!items.length){col.appendChild(h('div','cmt-empty','なし'));return col;}
+  const ul=h('ul','cmt-list');
+  items.forEach(t=>{const li=h('li','cmt-item',t);ul.appendChild(li);});
+  col.appendChild(ul);
+  if(items.length>5){
+    const btn=h('button','cmt-more',`全${items.length}件を表示`);
+    btn.onclick=()=>{
+      const open=ul.classList.toggle('open');
+      btn.textContent=open?'閉じる':`全${items.length}件を表示`;
+    };
+    col.appendChild(btn);
+  }
+  return col;
+}
+
+function renderSurvey(s){
+  const pnl=h('div','pnl');
+  pnl.id='p-'+s.id;
+  if(s.title||s.sub){pnl.appendChild(h('div','note',`<strong>${s.title||''}</strong>${s.sub?' <span style="opacity:.7">'+s.sub+'</span>':''} / ${s.lb} / 回答${s.r}件${s.n?' / 参加'+s.n+'名':''}`));}
+  pnl.appendChild(tiles(s));
+  pnl.appendChild(satBar(s.d,s.r));
+  if(s.reasons)pnl.appendChild(hBars('参加理由',s.reasons));
+  if(s.channels)pnl.appendChild(hBars('流入経路',s.channels));
+  pnl.appendChild(cmtSection(s.pos,s.imp));
+  return pnl;
+}
+
+function renderInitial(){
+  const pnl=h('div','pnl');
+  pnl.id='p-20260319';
+  pnl.appendChild(h('div','note',`3/19 事前アンケート（ゼミ開始前） / 回答${INIT.r}名 / キャリア志向の調査`));
+
+  const t1=h('div','tiles');
+  t1.innerHTML=`<div class="tile"><div class="tile-v">${INIT.r}</div><div class="tile-l">回答数</div></div>
+    <div class="tile"><div class="tile-v">59%</div><div class="tile-l">掛け持ち層</div><div class="tile-sub">最多セグメント</div></div>
+    <div class="tile"><div class="tile-v">31</div><div class="tile-l">AI研修講師 志望</div><div class="tile-sub">人気No.1キャリア</div></div>`;
+  pnl.appendChild(t1);
+
+  const mx1=Math.max(...INIT.status.map(s=>s[1]));
+  pnl.appendChild(hBars('現在の状況',INIT.status.map(s=>[`${s[0]} (${s[2]}%)`,s[1]]),mx1));
+
+  const mx2=Math.max(...INIT.careers.map(c=>c[1]));
+  pnl.appendChild(hBars('気になるネクストキャリア（複数回答）',INIT.careers,mx2));
+
+  const mx3=Math.max(...INIT.walls.map(w=>w[1]));
+  pnl.appendChild(hBars('一番の壁',INIT.walls.map(w=>[`${w[0]} (${w[2]}%)`,w[1]]),mx3));
+
+  const csec=h('div','sec');
+  csec.appendChild(h('div','sec-t','注目コメント'));
+  INIT.comments.forEach(g=>{
+    const d=h('div','cmt-themed');
+    d.innerHTML=`<h4>${g.theme}</h4>`;
+    const ul=h('ul','cmt-list open');
+    g.items.forEach(t=>{ul.appendChild(h('li','cmt-item',t));});
+    d.appendChild(ul);
+    csec.appendChild(d);
+  });
+  pnl.appendChild(csec);
+  return pnl;
+}
+
+function renderOverview(){
+  const pnl=h('div','pnl');
+  pnl.id='p-overview';
+
+  let totalR=0,weightedSat=0;
+  S.forEach(s=>{totalR+=s.r;weightedSat+=s.r*s.sat;});
+  const avgSat=(weightedSat/totalR).toFixed(2);
+
+  const t=h('div','tiles');
+  t.innerHTML=`<div class="tile"><div class="tile-v">${S.length}</div><div class="tile-l">実施回数</div><div class="tile-sub">2026年4月〜</div></div>
+    <div class="tile"><div class="tile-v">${avgSat}</div><div class="tile-l">平均満足度</div><div class="tile-sub">加重平均</div></div>
+    <div class="tile"><div class="tile-v">${totalR}</div><div class="tile-l">累計回答数</div></div>`;
+  pnl.appendChild(t);
+
+  const cc=h('div','chart-card');
+  cc.innerHTML='<h3>満足度推移</h3>';
+  const cv=document.createElement('canvas');
+  cv.className='trend';
+  cc.appendChild(cv);
+  pnl.appendChild(cc);
+
+  const tw=h('div','tbl-wrap');
+  let rows='';
+  [...S].reverse().forEach(s=>{
+    const latest=s===S[0];
+    rows+=`<tr><td${latest?' class="hi"':''}>${s.lb}</td><td>${s.title||s.sub||''}</td><td>${s.sub||''}</td><td>${s.n||'-'}</td><td>${s.r}</td><td>${s.pct?s.pct+'%':'-'}</td><td${latest?' class="hi"':''}>${s.sat.toFixed(2)}</td></tr>`;
+  });
+  tw.innerHTML=`<table class="sum"><thead><tr><th>日付</th><th>テーマ</th><th>種別</th><th>参加者</th><th>回答</th><th>回答率</th><th>満足度</th></tr></thead><tbody>${rows}</tbody></table>`;
+  pnl.appendChild(tw);
+  return {pnl,canvas:cv};
+}
+
+function drawTrend(canvas){
+  const rect=canvas.getBoundingClientRect();
+  const dpr=window.devicePixelRatio||1;
+  const W=rect.width, H=rect.height;
+  canvas.width=W*dpr;canvas.height=H*dpr;
+  const ctx=canvas.getContext('2d');
+  ctx.scale(dpr,dpr);
+
+  const pts=[...S].reverse();
+  const pad={t:30,r:20,b:36,l:40};
+  const pw=W-pad.l-pad.r, ph=H-pad.t-pad.b;
+
+  const vals=pts.map(p=>p.sat);
+  const yMin=4.2, yMax=5.0;
+  const yRange=yMax-yMin;
+
+  const toX=i=>pad.l+i/(pts.length-1)*pw;
+  const toY=v=>pad.t+(1-(v-yMin)/yRange)*ph;
+
+  const cs=getComputedStyle(document.documentElement);
+  const gridC=cs.getPropertyValue('--rule').trim();
+  const inkC=cs.getPropertyValue('--ink').trim();
+  const ink2C=cs.getPropertyValue('--ink2').trim();
+  const ink3C=cs.getPropertyValue('--ink3').trim();
+  const accentC=cs.getPropertyValue('--accent').trim();
+  const cardC=cs.getPropertyValue('--card').trim();
+
+  ctx.strokeStyle=gridC;ctx.lineWidth=1;
+  for(let v=4.2;v<=5.0;v+=0.2){
+    const y=Math.round(toY(v))+0.5;
+    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(W-pad.r,y);ctx.stroke();
+    ctx.fillStyle=ink3C;ctx.font='11px system-ui,sans-serif';ctx.textAlign='right';ctx.textBaseline='middle';
+    ctx.fillText(v.toFixed(1),pad.l-6,y);
+  }
+
+  ctx.strokeStyle=accentC;ctx.lineWidth=2;ctx.lineJoin='round';ctx.lineCap='round';
+  ctx.beginPath();
+  pts.forEach((p,i)=>{const x=toX(i),y=toY(p.sat);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});
+  ctx.stroke();
+
+  pts.forEach((p,i)=>{
+    const x=toX(i),y=toY(p.sat);
+    ctx.beginPath();ctx.arc(x,y,5,0,Math.PI*2);ctx.fillStyle=accentC;ctx.fill();
+    ctx.beginPath();ctx.arc(x,y,3,0,Math.PI*2);ctx.fillStyle=cardC;ctx.fill();
+    ctx.beginPath();ctx.arc(x,y,2,0,Math.PI*2);ctx.fillStyle=accentC;ctx.fill();
+
+    ctx.fillStyle=inkC;ctx.font='bold 12px system-ui,sans-serif';ctx.textAlign='center';ctx.textBaseline='bottom';
+    ctx.fillText(p.sat.toFixed(2),x,y-10);
+    ctx.fillStyle=ink3C;ctx.font='10px system-ui,sans-serif';ctx.textBaseline='top';
+    ctx.fillText('n='+p.r,x,y+10);
+
+    ctx.fillStyle=ink2C;ctx.font='11px system-ui,sans-serif';ctx.textBaseline='top';
+    ctx.fillText(p.lb,x,H-pad.b+8);
+  });
+}
+
+function init(){
+  const app=document.getElementById('app');
+  const wrap=h('div','wrap');
+
+  const hdr=h('header','hdr');
+  hdr.innerHTML='<h1>佐藤ゼミ アンケート結果</h1><p>SHIFT AI ライターゼミ / 全回分ダッシュボード</p>';
+  wrap.appendChild(hdr);
+
+  const nav=h('nav','tabs');
+  nav.setAttribute('role','tablist');
+  const tabData=[{id:'overview',lb:'推移'},...S.map(s=>({id:s.id,lb:s.lb})),{id:'20260319',lb:'3/19'}];
+  tabData.forEach(t=>{
+    const btn=h('button','tab',t.lb);
+    btn.dataset.tab=t.id;
+    btn.setAttribute('role','tab');
+    btn.onclick=()=>activate(t.id);
+    nav.appendChild(btn);
+  });
+  wrap.appendChild(nav);
+
+  const main=h('main','');
+
+  const ov=renderOverview();
+  main.appendChild(ov.pnl);
+  S.forEach(s=>main.appendChild(renderSurvey(s)));
+  main.appendChild(renderInitial());
+
+  wrap.appendChild(main);
+  app.appendChild(wrap);
+
+  activate('overview');
+
+  requestAnimationFrame(()=>drawTrend(ov.canvas));
+  let resizeTimer;
+  window.addEventListener('resize',()=>{
+    clearTimeout(resizeTimer);
+    resizeTimer=setTimeout(()=>drawTrend(ov.canvas),150);
+  });
+
+  const mo=new MutationObserver(()=>{
+    if(document.querySelector('.pnl.act #p-overview, #p-overview.act'))drawTrend(ov.canvas);
+  });
+  mo.observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+}
+
+function activate(id){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('act',t.dataset.tab===id));
+  document.querySelectorAll('.pnl').forEach(p=>p.classList.toggle('act',p.id==='p-'+id));
+  if(id==='overview'){
+    const cv=document.querySelector('canvas.trend');
+    if(cv)requestAnimationFrame(()=>drawTrend(cv));
+  }
+}
+
+init();
+</script>
