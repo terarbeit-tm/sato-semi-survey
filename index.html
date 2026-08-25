@@ -4,23 +4,29 @@
 <title>佐藤ゼミ アンケートダッシュボード</title>
 <style>
 :root {
-  --bg: #F5F4F1;
+  /* 寺町 Personal：紺 × オーカー / アイボリー地 */
+  --bg: #F5F3EF;
   --card: #FFFFFF;
-  --ink: #1A1918;
-  --ink2: #6B6A66;
-  --ink3: #9A9994;
-  --accent: #2A6FBD;
-  --accent-bg: rgba(42,111,189,0.06);
-  --rule: #D5D4CE;
-  --shadow: 0 1px 3px rgba(0,0,0,0.06);
-  --s5: #2A6FBD;
-  --s4: #7AB3E5;
-  --s3: #B8B7B1;
-  --s2: #D9A030;
-  --s1: #C94545;
-  --pos: #2A8F65;
-  --imp: #C98500;
-  --r: 6px;
+  --ink: #1A2744;
+  --ink2: #6B6F7D;
+  --ink3: #9B9DA6;
+  --accent: #1A2744;
+  --accent2: #2A3A5C;
+  --accent-bg: rgba(26,39,68,0.05);
+  --gold: #C8A55A;
+  --gold-ink: #8A6A20;
+  --gold-bg: #F4EEE0;
+  --rule: #DED9CF;
+  --rule2: #ECE7DD;
+  --shadow: none;
+  --s5: #1A2744;
+  --s4: #4A5D85;
+  --s3: #B5B1A6;
+  --s2: #C07A35;
+  --s1: #9E3229;
+  --pos: #2A6F55;
+  --imp: #8A6A20;
+  --r: 4px;
   --font: "Hiragino Kaku Gothic ProN","Hiragino Sans","Noto Sans JP",system-ui,-apple-system,sans-serif;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -28,58 +34,63 @@ html{font-size:20px;}
 body{font-family:var(--font);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;font-size:1rem;}
 .wrap{max-width:1100px;margin:0 auto;padding:1.2rem 1rem 2.4rem;}
 .hdr{padding:1.6rem 0 1rem;}
-.hdr h1{font-size:1.4rem;font-weight:700;letter-spacing:-0.01em;}
+.hdr h1{font-size:1.55rem;font-weight:700;letter-spacing:-0.01em;color:var(--ink);text-wrap:balance;}
 .hdr p{font-size:0.75rem;color:var(--ink2);margin-top:2px;}
 .tabs{display:flex;gap:0;border-bottom:2px solid var(--rule);overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;position:sticky;top:0;background:var(--bg);z-index:10;padding-top:2px;}
 .tabs::-webkit-scrollbar{display:none;}
 .tab{padding:0.5rem 0.7rem;font-size:0.75rem;font-weight:500;color:var(--ink2);cursor:pointer;border:none;background:none;white-space:nowrap;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;font-family:var(--font);}
 .tab:hover{color:var(--ink);}
-.tab.act{color:var(--accent);border-bottom-color:var(--accent);}
+.tab.act{color:var(--accent);font-weight:700;border-bottom-color:var(--gold);}
 .tab .badge{font-size:10px;color:var(--ink3);margin-left:2px;}
 .pnl{display:none;padding:24px 0;}
 .pnl.act{display:block;}
-.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:28px;}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:2rem;}
 .tiles.t4{grid-template-columns:repeat(4,1fr);}
-.tile{background:var(--card);border-radius:var(--r);padding:0.8rem 0.9rem;border:1px solid var(--rule);box-shadow:var(--shadow);}
-.tile-v{font-size:1.8rem;font-weight:700;line-height:1.1;}
+.tile{background:var(--card);border-radius:var(--r);padding:0.9rem 1rem;border:1px solid var(--rule);border-top:3px solid var(--rule);}
+.tile.key{border-top-color:var(--gold);}
+.tile-v{font-size:1.9rem;font-weight:700;line-height:1.1;color:var(--accent);font-variant-numeric:tabular-nums;letter-spacing:-0.02em;}
 .tile-l{font-size:0.65rem;color:var(--ink2);margin-top:4px;letter-spacing:0.02em;}
 .tile-sub{font-size:0.6rem;color:var(--ink3);margin-top:2px;}
-.sec{margin-bottom:1rem;background:var(--card);border:1px solid var(--rule);border-radius:var(--r);padding:0.9rem 1rem;box-shadow:var(--shadow);}
-.sec-t{font-size:0.75rem;font-weight:600;color:var(--ink2);margin-bottom:0.6rem;letter-spacing:0.02em;text-transform:uppercase;padding-bottom:0.4rem;border-bottom:1px solid var(--rule);}
+.sec{margin-bottom:1.6rem;background:var(--card);border:1px solid var(--rule);border-radius:var(--r);padding:1rem 1.1rem;}
+.sec-t{font-size:0.7rem;font-weight:700;color:var(--ink);margin-bottom:0.8rem;letter-spacing:0.08em;padding-bottom:0.5rem;border-bottom:1px solid var(--rule2);display:flex;align-items:center;gap:0.45rem;text-wrap:balance;}
+.sec-t::before{content:"";width:3px;height:0.85rem;background:var(--gold);flex-shrink:0;}
 .sat-bar{display:flex;height:26px;border-radius:4px;overflow:hidden;gap:2px;background:var(--card);}
 .sat-seg{display:flex;align-items:center;justify-content:center;font-size:0.6rem;font-weight:600;color:#fff;min-width:2px;transition:width .3s;}
-.sat-seg.c5{background:var(--s5);}.sat-seg.c4{background:var(--s4);color:var(--ink);}.sat-seg.c3{background:var(--s3);color:var(--ink);}
-.sat-seg.c2{background:var(--s2);color:var(--ink);}.sat-seg.c1{background:var(--s1);}
+.sat-seg.c5{background:var(--s5);}.sat-seg.c4{background:var(--s4);}.sat-seg.c3{background:var(--s3);color:var(--ink);}
+.sat-seg.c2{background:var(--s2);}.sat-seg.c1{background:var(--s1);}
 .sat-legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:10px;}
 .sat-li{display:flex;align-items:center;gap:5px;font-size:0.65rem;color:var(--ink2);}
 .sat-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0;}
 .hbar{margin-bottom:8px;display:flex;align-items:center;gap:8px;}
 .hbar-lb{width:9rem;text-align:right;font-size:0.7rem;color:var(--ink2);flex-shrink:0;line-height:1.3;}
-.hbar-tr{flex:1;height:1.2rem;background:var(--rule);border-radius:3px;overflow:hidden;position:relative;}
+.hbar-tr{flex:1;height:1.2rem;background:var(--rule2);border-radius:3px;overflow:hidden;position:relative;}
 .hbar-fl{height:100%;background:var(--accent);border-radius:3px;transition:width .4s ease;}
+.sec-gold .hbar-fl{background:var(--gold);}
+.sec-gold .sec-t::before{background:var(--accent);}
 .hbar-vl{font-size:0.7rem;color:var(--ink2);margin-left:8px;flex-shrink:0;font-variant-numeric:tabular-nums;min-width:2rem;}
 .cmts{display:grid;grid-template-columns:1fr 1fr;gap:28px;}
 .cmt-col h3{font-size:0.75rem;font-weight:600;color:var(--ink2);margin-bottom:0.5rem;display:flex;align-items:center;gap:6px;}
 .cmt-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
 .cmt-dot.p{background:var(--pos);}.cmt-dot.i{background:var(--imp);}
 .cmt-list{list-style:none;}
-.cmt-item{font-size:0.75rem;line-height:1.7;padding:0.4rem 0;border-bottom:1px solid #E8E7E2;color:var(--ink);}
+.cmt-item{font-size:0.75rem;line-height:1.8;padding:0.5rem 0;border-bottom:1px solid var(--rule2);color:var(--ink);text-wrap:pretty;}
 .cmt-item:last-child{border-bottom:none;}
 .cmt-list:not(.open) .cmt-item:nth-child(n+6){display:none;}
-.cmt-more{font-size:0.65rem;color:var(--accent);cursor:pointer;padding:0.3rem 0;border:none;background:none;font-family:var(--font);font-weight:500;}
+.cmt-more{font-size:0.65rem;color:var(--gold-ink);cursor:pointer;padding:0.3rem 0;border:none;background:none;font-family:var(--font);font-weight:600;}
 .cmt-more:hover{text-decoration:underline;}
 .cmt-empty{font-size:0.75rem;color:var(--ink3);padding:0.4rem 0;}
-.tbl-wrap{overflow-x:auto;background:var(--card);border:1px solid var(--rule);border-radius:var(--r);box-shadow:var(--shadow);padding:4px 0;}
+.tbl-wrap{overflow-x:auto;background:var(--card);border:1px solid var(--rule);border-radius:var(--r);padding:4px 0;}
 table.sum{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;}
 table.sum th{font-size:0.6rem;font-weight:600;color:var(--ink3);text-align:left;padding:0.5rem 0.6rem;border-bottom:2px solid var(--rule);letter-spacing:0.04em;text-transform:uppercase;}
 table.sum td{font-size:0.75rem;padding:0.5rem 0.6rem;border-bottom:1px solid var(--rule);}
 table.sum tbody tr:last-child td{border-bottom:none;}
 table.sum tr:hover td{background:var(--accent-bg);}
-table.sum .hi{font-weight:600;color:var(--accent);}
-.chart-card{background:var(--card);border:1px solid var(--rule);border-radius:var(--r);padding:1rem;margin-bottom:1rem;box-shadow:var(--shadow);}
-.chart-card h3{font-size:0.75rem;font-weight:600;color:var(--ink2);margin-bottom:0.7rem;}
+table.sum .hi{font-weight:700;color:var(--gold-ink);}
+.chart-card{background:var(--card);border:1px solid var(--rule);border-radius:var(--r);padding:1.1rem 1.2rem;margin-bottom:1.6rem;}
+.chart-card h3{font-size:0.7rem;font-weight:700;color:var(--ink);margin-bottom:0.2rem;letter-spacing:0.08em;}
+.chart-cap{font-size:0.6rem;color:var(--ink3);margin-bottom:0.8rem;line-height:1.6;}
 canvas.trend{width:100%;height:220px;display:block;}
-.note{font-size:0.7rem;color:var(--ink2);padding:0.6rem 0.8rem;background:var(--accent-bg);border:1px solid rgba(42,111,189,0.15);border-radius:var(--r);margin-bottom:1rem;line-height:1.6;font-weight:500;}
+.note{font-size:0.7rem;color:var(--ink);padding:0.7rem 0.9rem;background:var(--gold-bg);border:1px solid rgba(200,165,90,0.4);border-left:3px solid var(--gold);border-radius:var(--r);margin-bottom:1.6rem;line-height:1.7;font-weight:500;text-wrap:pretty;}
 .career-bar{margin-bottom:6px;display:flex;align-items:center;gap:8px;}
 .career-lb{width:10rem;text-align:right;font-size:0.7rem;color:var(--ink2);flex-shrink:0;}
 .career-tr{flex:1;height:1.1rem;background:var(--rule);border-radius:3px;overflow:hidden;}
@@ -143,7 +154,6 @@ imp:[
 `AI講師の話を深堀りして欲しいです`,
 `実績を積む合宿等`
 ]},
-
 
 {id:'20260813',lb:'8/13',title:'教えるだけでは、案件は来ない。〜AI講師の"案件獲得"のリアル〜',sub:'講義回',n:151,r:72,pct:47.7,sat:4.65,d:[0,1,4,14,53],nps:4.42,
 reasons:[['興味のあるジャンルだった',41],['登壇者の話を聞きたかった',17],['業務に役立つと感じた',8],['タイミングが合った',3],['新しいAI情報を早く得たい',3]],
@@ -479,7 +489,7 @@ function tiles(data){
   if(data.nps!=null)items.push({v:data.nps.toFixed(2),l:'推奨度',s:'MAX 5.00'});
   if(items.length===4)g.classList.add('t4');
   items.forEach(t=>{
-    const d=h('div','tile');
+    const d=h('div','tile'+(t.l==='満足度'?' key':''));
     d.innerHTML=`<div class="tile-v">${t.v}</div><div class="tile-l">${t.l}</div>${t.s?`<div class="tile-sub">${t.s}</div>`:''}`;
     g.appendChild(d);
   });
@@ -504,15 +514,15 @@ function satBar(dist,total){
   for(let i=4;i>=0;i--){
     if(dist[i]===0)continue;
     const pct=(dist[i]/total*100).toFixed(1);
-    const li=h('div','sat-li',`<span class="sat-dot" style="background:var(--s${i+1})"></span>${SL[i]} ${dist[i]}件 (${pct}%)`);
+    const li=h('div','sat-li',`<span class="sat-dot" style="background:var(--s${i+1})"></span>${SL[i]} ${dist[i]}件`);
     leg.appendChild(li);
   }
   sec.appendChild(leg);
   return sec;
 }
 
-function hBars(title,data,maxVal){
-  const sec=h('div','sec');
+function hBars(title,data,maxVal,variant){
+  const sec=h('div','sec'+(variant?' sec-'+variant:''));
   sec.appendChild(h('div','sec-t',title));
   const mx=maxVal||Math.max(...data.map(d=>d[1]));
   data.forEach(([lb,val])=>{
@@ -558,7 +568,7 @@ function renderSurvey(s){
   pnl.appendChild(tiles(s));
   pnl.appendChild(satBar(s.d,s.r));
   if(s.reasons)pnl.appendChild(hBars('参加理由',s.reasons));
-  if(s.channels)pnl.appendChild(hBars('流入経路',s.channels));
+  if(s.channels)pnl.appendChild(hBars('流入経路',s.channels,null,'gold'));
   pnl.appendChild(cmtSection(s.pos,s.imp));
   return pnl;
 }
@@ -607,12 +617,12 @@ function renderOverview(){
 
   const t=h('div','tiles');
   t.innerHTML=`<div class="tile"><div class="tile-v">${S.length}</div><div class="tile-l">実施回数</div><div class="tile-sub">2026年4月〜</div></div>
-    <div class="tile"><div class="tile-v">${avgSat}</div><div class="tile-l">平均満足度</div><div class="tile-sub">加重平均</div></div>
+    <div class="tile key"><div class="tile-v">${avgSat}</div><div class="tile-l">平均満足度</div><div class="tile-sub">加重平均</div></div>
     <div class="tile"><div class="tile-v">${totalR}</div><div class="tile-l">累計回答数</div></div>`;
   pnl.appendChild(t);
 
   const cc=h('div','chart-card');
-  cc.innerHTML='<h3>満足度推移</h3>';
+  cc.innerHTML='<h3>満足度推移</h3><p class="chart-cap">縦軸は4.0〜5.0（0起点ではありません）。<br>オーカーの破線＝全'+S.length+'回の加重平均 '+avgSat+'。'+S[0].lb+'は加重平均を'+(S[0].sat-avgSat>0?'+':'')+(S[0].sat-avgSat).toFixed(2)+'上回っています。</p>';
   const cv=document.createElement('canvas');
   cv.className='trend';
   cc.appendChild(cv);
@@ -642,7 +652,7 @@ function drawTrend(canvas){
   const pw=W-pad.l-pad.r, ph=H-pad.t-pad.b;
 
   const vals=pts.map(p=>p.sat);
-  const yMin=4.2, yMax=5.0;
+  const yMin=4.0, yMax=5.0;
   const yRange=yMax-yMin;
 
   const toX=i=>pad.l+i/(pts.length-1)*pw;
@@ -657,12 +667,22 @@ function drawTrend(canvas){
   const cardC=cs.getPropertyValue('--card').trim();
 
   ctx.strokeStyle=gridC;ctx.lineWidth=1;
-  for(let v=4.2;v<=5.0;v+=0.2){
+  for(let v=4.0;v<=5.0;v+=0.2){
     const y=Math.round(toY(v))+0.5;
     ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(W-pad.r,y);ctx.stroke();
     ctx.fillStyle=ink3C;ctx.font='11px system-ui,sans-serif';ctx.textAlign='right';ctx.textBaseline='middle';
     ctx.fillText(v.toFixed(1),pad.l-6,y);
   }
+
+  const goldC=cs.getPropertyValue('--gold').trim();
+  const goldInkC=cs.getPropertyValue('--gold-ink').trim();
+  const rSum=pts.reduce((a,p)=>a+p.r,0);
+  const wAvg=pts.reduce((a,p)=>a+p.sat*p.r,0)/rSum;
+  const ay=Math.round(toY(wAvg))+0.5;
+  ctx.save();
+  ctx.setLineDash([5,4]);ctx.strokeStyle=goldC;ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(pad.l,ay);ctx.lineTo(W-pad.r,ay);ctx.stroke();
+  ctx.restore();
 
   ctx.strokeStyle=accentC;ctx.lineWidth=2;ctx.lineJoin='round';ctx.lineCap='round';
   ctx.beginPath();
@@ -671,14 +691,18 @@ function drawTrend(canvas){
 
   pts.forEach((p,i)=>{
     const x=toX(i),y=toY(p.sat);
-    ctx.beginPath();ctx.arc(x,y,5,0,Math.PI*2);ctx.fillStyle=accentC;ctx.fill();
+    const isLast=(i===pts.length-1);
+    const dotC=isLast?goldC:accentC;
+    ctx.beginPath();ctx.arc(x,y,isLast?6:5,0,Math.PI*2);ctx.fillStyle=dotC;ctx.fill();
     ctx.beginPath();ctx.arc(x,y,3,0,Math.PI*2);ctx.fillStyle=cardC;ctx.fill();
-    ctx.beginPath();ctx.arc(x,y,2,0,Math.PI*2);ctx.fillStyle=accentC;ctx.fill();
+    ctx.beginPath();ctx.arc(x,y,2,0,Math.PI*2);ctx.fillStyle=dotC;ctx.fill();
 
-    ctx.fillStyle=inkC;ctx.font='bold 12px system-ui,sans-serif';ctx.textAlign='center';ctx.textBaseline='bottom';
+    ctx.fillStyle=isLast?goldInkC:inkC;ctx.font='bold 12px system-ui,sans-serif';ctx.textAlign='center';ctx.textBaseline='bottom';
     ctx.fillText(p.sat.toFixed(2),x,y-10);
-    ctx.fillStyle=ink3C;ctx.font='10px system-ui,sans-serif';ctx.textBaseline='top';
-    ctx.fillText('n='+p.r,x,y+10);
+    if(pw/(pts.length-1)>=46){
+      ctx.fillStyle=ink3C;ctx.font='10px system-ui,sans-serif';ctx.textBaseline='top';
+      ctx.fillText('n='+p.r,x,y+10);
+    }
 
     ctx.fillStyle=ink2C;ctx.font='11px system-ui,sans-serif';ctx.textBaseline='top';
     ctx.fillText(p.lb,x,H-pad.b+8);
